@@ -27,7 +27,17 @@ func (r *resumeRepository) StoreResume(resume *domain.Resume) error {
 }
 
 func (r *resumeRepository) StoreResumeLog(log *domain.ResumeLog) error {
-	return nil
+	query := `
+		insert into resume_logs
+		(slug, ip_address, user_agent)
+		values ($1, $2, $3)
+		returning id
+	`
+
+	row := r.sqlHandler.QueryRow(query, log.Slug, log.IPAddress, log.UserAgent)
+	err := row.Scan(&log.ID)
+
+	return domain.WrapError(err)
 }
 
 func (r *resumeRepository) FindBySlug(slug string) (domain.Resume, error) {
