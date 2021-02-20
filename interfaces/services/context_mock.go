@@ -33,6 +33,20 @@ func (m *MockContext) EXPECT() *MockContextMockRecorder {
 	return m.recorder
 }
 
+// Param mocks base method
+func (m *MockContext) Param(name string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Param", name)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Param indicates an expected call of Param
+func (mr *MockContextMockRecorder) Param(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Param", reflect.TypeOf((*MockContext)(nil).Param), name)
+}
+
 // QueryParam mocks base method
 func (m *MockContext) QueryParam(name string) string {
 	m.ctrl.T.Helper()

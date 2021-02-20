@@ -138,6 +138,9 @@ func (d *serverDependencies) routes() []services.Route {
 	return []services.Route{
 		// Service infra
 		{Method: http.MethodGet, Path: "/ping", HandlerFunc: d.Services().Health.Ping},
+
+		// Service resume
+		{Method: http.MethodGet, Path: "/resume/:slug", HandlerFunc: d.Services().Resume.Get},
 	}
 }
 

@@ -24,7 +24,7 @@ type resumeService struct {
 }
 
 func (s *resumeService) Get(ctx Context) error {
-	slug := ctx.QueryParam("slug")
+	slug := ctx.Param("slug")
 	ip := ctx.RealIP()
 	agent := ctx.UserAgent()
 	resume, err := s.ResumeInteractor.TrackedFind(slug, ip, agent)
@@ -36,5 +36,5 @@ func (s *resumeService) Get(ctx Context) error {
 		return domain.WrapError(err)
 	}
 
-	return ctx.JSON(http.StatusOK, resume.Body)
+	return ctx.String(http.StatusOK, resume.Body)
 }

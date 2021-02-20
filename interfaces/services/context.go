@@ -10,6 +10,9 @@ import (
 
 // Context is a subset of the echo framework context, so we are not directly depending on it
 type Context interface {
+	// Param returns path parameter by name.
+	Param(name string) string
+
 	// QueryParam returns the query param for the provided name.
 	QueryParam(name string) string
 

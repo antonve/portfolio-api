@@ -21,8 +21,8 @@ func TestResumeService_Find(t *testing.T) {
 	agent := "Chrome"
 
 	ctx := services.NewMockContext(ctrl)
-	ctx.EXPECT().JSON(200, body)
-	ctx.EXPECT().QueryParam("slug").Return(slug)
+	ctx.EXPECT().String(200, body)
+	ctx.EXPECT().Param("slug").Return(slug)
 	ctx.EXPECT().RealIP().Return(ip)
 	ctx.EXPECT().UserAgent().Return(agent)
 
