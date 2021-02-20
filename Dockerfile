@@ -1,14 +1,12 @@
-FROM golang:1.16
-
-WORKDIR $GOPATH/src/github.com/antonve/portfolio-api
-
+FROM golang:1.16 as build
+WORKDIR /base
 COPY . .
+RUN go mod download
+RUN go install -v ./...
 
-RUN GO111MODULE=on go mod download
+# Create production container
+FROM alpine:3.7
+COPY --from=build /go/bin/server /go/bin/migrate /usr/bin/
 
-RUN GO111MODULE=on go install -v ./...
-
-RUN export $(grep -v '^#' .env | xargs)
-RUN migrate
-
+# Run the app
 ENTRYPOINT ["server"]
