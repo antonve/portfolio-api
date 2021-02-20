@@ -16,6 +16,7 @@ type ResumeInteractor interface {
 	TrackedFind(slug, ipAddress, userAgent string) (*domain.Resume, error)
 }
 
+// NewResumeInteractor initializer
 func NewResumeInteractor(resumeRepository ResumeRepository) ResumeInteractor {
 	return &resumeInteractor{
 		resumeRepository: resumeRepository,

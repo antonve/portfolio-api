@@ -200,3 +200,31 @@ func (mr *MockContextMockRecorder) Environment() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Environment", reflect.TypeOf((*MockContext)(nil).Environment))
 }
+
+// RealIP mocks base method
+func (m *MockContext) RealIP() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RealIP")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// RealIP indicates an expected call of RealIP
+func (mr *MockContextMockRecorder) RealIP() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RealIP", reflect.TypeOf((*MockContext)(nil).RealIP))
+}
+
+// UserAgent mocks base method
+func (m *MockContext) UserAgent() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserAgent")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// UserAgent indicates an expected call of UserAgent
+func (mr *MockContextMockRecorder) UserAgent() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserAgent", reflect.TypeOf((*MockContext)(nil).UserAgent))
+}

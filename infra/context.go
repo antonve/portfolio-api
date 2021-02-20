@@ -49,3 +49,7 @@ func (c context) OptionalIntQueryParam(name string, defaultValue uint64) uint64 
 
 	return result
 }
+
+func (c context) UserAgent() string {
+	return c.Request().Header.Get("User-Agent")
+}

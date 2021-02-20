@@ -46,4 +46,11 @@ type Context interface {
 
 	// Returns the environment the app is running in
 	Environment() domain.Environment
+
+	// RealIP returns the client's network address based on `X-Forwarded-For`
+	// or `X-Real-IP` request header.
+	RealIP() string
+
+	// UserAgent returns the client's user agent
+	UserAgent() string
 }
