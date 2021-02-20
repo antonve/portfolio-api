@@ -41,5 +41,18 @@ func (r *resumeRepository) StoreResumeLog(log *domain.ResumeLog) error {
 }
 
 func (r *resumeRepository) FindBySlug(slug string) (domain.Resume, error) {
-	return domain.Resume{}, nil
+	resume := domain.Resume{}
+
+	query := `
+		select slug, body, enabled
+		from resume
+		where slug = $1 and enabled = true
+	`
+
+	err := r.sqlHandler.QueryRow(query, slug).StructScan(&resume)
+	if err != nil {
+		return resume, domain.WrapError(err)
+	}
+
+	return resume, nil
 }
