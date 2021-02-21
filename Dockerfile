@@ -1,12 +1,12 @@
-FROM golang:1.16 as build
+FROM golang:1.16-alpine as build
 WORKDIR /base
 COPY . .
 RUN go mod download
-RUN go install -v ./...
+RUN CGO_ENABLED=0 GOOS=linux go install -v ./...
 
 # Create production container
 FROM alpine:3.7
-COPY --from=build /go/bin/server /go/bin/migrate /usr/bin/
+COPY --from=build /go/bin/server /go/bin/migrate /
 
 # Run the app
-ENTRYPOINT ["server"]
+ENTRYPOINT ["/server"]
