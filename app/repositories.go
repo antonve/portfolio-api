@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/antonve/portfolio-api/interfaces/rdb"
+	"github.com/antonve/portfolio-api/infra"
 	r "github.com/antonve/portfolio-api/interfaces/repositories"
 	"github.com/antonve/portfolio-api/usecases"
 )
@@ -12,8 +12,8 @@ type Repositories struct {
 }
 
 // NewRepositories initializes all repositories
-func NewRepositories(sh rdb.SQLHandler) *Repositories {
+func NewRepositories(rdb *infra.RDB) *Repositories {
 	return &Repositories{
-		Resume: r.NewResumeRepository(sh),
+		Resume: r.NewResumeRepository(rdb),
 	}
 }

@@ -2,17 +2,17 @@ package repositories
 
 import (
 	"github.com/antonve/portfolio-api/domain"
-	"github.com/antonve/portfolio-api/interfaces/rdb"
+	"github.com/antonve/portfolio-api/infra"
 	"github.com/antonve/portfolio-api/usecases"
 )
 
 // NewResumeRepository instantiates a new resume repository
-func NewResumeRepository(sqlHandler rdb.SQLHandler) usecases.ResumeRepository {
-	return &resumeRepository{sqlHandler: sqlHandler}
+func NewResumeRepository(rdb *infra.RDB) usecases.ResumeRepository {
+	return &resumeRepository{rdb: rdb}
 }
 
 type resumeRepository struct {
-	sqlHandler rdb.SQLHandler
+	rdb *infra.RDB
 }
 
 func (r *resumeRepository) StoreResume(resume *domain.Resume) error {
@@ -22,7 +22,7 @@ func (r *resumeRepository) StoreResume(resume *domain.Resume) error {
 		values (:slug, :body, :enabled)
 	`
 
-	_, err := r.sqlHandler.NamedExecute(query, resume)
+	_, err := r.rdb.NamedExec(query, resume)
 	return domain.WrapError(err)
 }
 
@@ -34,7 +34,7 @@ func (r *resumeRepository) StoreResumeLog(log *domain.ResumeLog) error {
 		returning id
 	`
 
-	row := r.sqlHandler.QueryRow(query, log.Slug, log.IPAddress, log.UserAgent)
+	row := r.rdb.QueryRow(query, log.Slug, log.IPAddress, log.UserAgent)
 	err := row.Scan(&log.ID)
 
 	return domain.WrapError(err)
@@ -49,7 +49,7 @@ func (r *resumeRepository) FindBySlug(slug string) (domain.Resume, error) {
 		where slug = $1 and enabled = true
 	`
 
-	err := r.sqlHandler.Get(&resume, query, slug)
+	err := r.rdb.Get(&resume, query, slug)
 	if err != nil {
 		return resume, domain.WrapError(err)
 	}

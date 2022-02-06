@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/antonve/portfolio-api/infra"
-	"github.com/antonve/portfolio-api/interfaces/rdb"
 	"github.com/antonve/portfolio-api/test"
 	"github.com/jmoiron/sqlx"
 
@@ -54,14 +53,14 @@ func loadConfig() *test.Config {
 	return c
 }
 
-func setupTestingSuite(t *testing.T) (rdb.SQLHandler, func() error) {
+func setupTestingSuite(t *testing.T) (*infra.RDB, func() error) {
 	t.Parallel()
 
 	db, cleanup := prepareDB(t)
-	return infra.NewSQLHandler(db), cleanup
+	return db, cleanup
 }
 
-func prepareDB(t *testing.T) (db *sqlx.DB, cleanup func() error) {
+func prepareDB(t *testing.T) (*infra.RDB, func() error) {
 	cName := fmt.Sprintf("connection_%d", time.Now().UnixNano())
 	db, err := sqlx.Open("pgx", cName)
 

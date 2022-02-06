@@ -10,10 +10,10 @@ import (
 )
 
 func TestResumeRepository_StoreResume(t *testing.T) {
-	sqlHandler, cleanup := setupTestingSuite(t)
+	rdb, cleanup := setupTestingSuite(t)
 	defer cleanup()
 
-	repo := repositories.NewResumeRepository(sqlHandler)
+	repo := repositories.NewResumeRepository(rdb)
 
 	resume := &domain.Resume{
 		Slug:    "test",

@@ -9,7 +9,6 @@ import (
 
 	"github.com/antonve/portfolio-api/domain"
 	"github.com/antonve/portfolio-api/infra"
-	"github.com/antonve/portfolio-api/interfaces/rdb"
 	"github.com/antonve/portfolio-api/interfaces/services"
 	"github.com/antonve/portfolio-api/usecases"
 )
@@ -23,7 +22,6 @@ type ServerDependencies interface {
 	ErrorReporter() usecases.ErrorReporter
 
 	RDB() *infra.RDB
-	SQLHandler() rdb.SQLHandler
 
 	Repositories() *Repositories
 	Interactors() *Interactors
@@ -57,11 +55,6 @@ type serverDependencies struct {
 
 	rdb struct {
 		result *infra.RDB
-		once   sync.Once
-	}
-
-	sqlHandler struct {
-		result rdb.SQLHandler
 		once   sync.Once
 	}
 
@@ -105,7 +98,7 @@ func (d *serverDependencies) Services() *Services {
 func (d *serverDependencies) Repositories() *Repositories {
 	holder := &d.repositories
 	holder.once.Do(func() {
-		holder.result = NewRepositories(d.SQLHandler())
+		holder.result = NewRepositories(d.RDB())
 	})
 	return holder.result
 }
@@ -175,14 +168,6 @@ func (d *serverDependencies) RDB() *infra.RDB {
 			// @TODO: we should handle errors more gracefully
 			log.Fatalf("failed to initialize connection pool with database: %v\n", err)
 		}
-	})
-	return holder.result
-}
-
-func (d *serverDependencies) SQLHandler() rdb.SQLHandler {
-	holder := &d.sqlHandler
-	holder.once.Do(func() {
-		holder.result = infra.NewSQLHandler(d.RDB())
 	})
 	return holder.result
 }
