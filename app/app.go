@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"log"
 	"sync"
 
@@ -11,21 +10,13 @@ import (
 	"github.com/antonve/portfolio-api/infra"
 )
 
-// ServerDependencies is a dependency container for the api
-type ServerDependencies interface {
-	AutoConfigure() error
-	Init()
-
+type Application interface {
 	RDB() *infra.RDB
+	Config() *Config
 }
 
-// NewServerDependencies instantiates all the dependencies for the api server
-func NewServerDependencies() ServerDependencies {
-	return &serverDependencies{}
-}
-
-type serverDependencies struct {
-	Environment          domain.Environment `envconfig:"app_env" valid:"environment" default:"development"`
+type Config struct {
+	Environment          domain.Environment `envconfig:"app_env" valid:"required" default:"development"`
 	DatabaseURL          string             `envconfig:"database_url" valid:"required"`
 	DatabaseMaxIdleConns int                `envconfig:"database_max_idle_conns" valid:"required"`
 	DatabaseMaxOpenConns int                `envconfig:"database_max_open_conns" valid:"required"`
@@ -33,6 +24,23 @@ type serverDependencies struct {
 	// ErrorReporterDSN     string             `envconfig:"error_reporter_dsn"`
 	Port     string `envconfig:"app_port" valid:"required"`
 	TimeZone string `envconfig:"app_timezone" valid:"required"`
+}
+
+func NewApplication() (Application, error) {
+	cfg := &Config{}
+	err := configo.Load(cfg, configo.Option{})
+	if err != nil {
+		return nil, err
+	}
+
+	a := &app{config: cfg}
+	a.Init()
+
+	return a, nil
+}
+
+type app struct {
+	config *Config
 
 	rdb struct {
 		result *infra.RDB
@@ -40,27 +48,22 @@ type serverDependencies struct {
 	}
 }
 
-func (d *serverDependencies) AutoConfigure() error {
-	return configo.Load(d, configo.Option{})
+func (d *app) Config() *Config {
+	return d.config
 }
 
-func (d *serverDependencies) Init() {}
+func (d *app) Init() {}
 
-func (d *serverDependencies) RDB() *infra.RDB {
+func (d *app) RDB() *infra.RDB {
 	holder := &d.rdb
 	holder.once.Do(func() {
 		var err error
-		holder.result, err = infra.NewRDB(d.DatabaseURL, d.DatabaseMaxIdleConns, d.DatabaseMaxOpenConns)
+		config := d.Config()
+		holder.result, err = infra.NewRDB(config.DatabaseURL, config.DatabaseMaxIdleConns, config.DatabaseMaxOpenConns)
 
 		if err != nil {
 			log.Fatalf("failed to initialize connection pool with database: %v\n", err)
 		}
 	})
 	return holder.result
-}
-
-func RunHTTPServer(d ServerDependencies) error {
-	d.Init()
-
-	return errors.New("not yet implemented")
 }

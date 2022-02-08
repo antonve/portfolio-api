@@ -15,4 +15,4 @@ test:
 
 .PHONY: run
 run:
-	@go run cmd/server/main.go
+	@go run main.go
