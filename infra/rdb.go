@@ -4,8 +4,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	// Postgres driver that's used to connect to the db
 	_ "github.com/lib/pq"
-
-	"github.com/antonve/portfolio-api/domain"
 )
 
 // RDB is a relational database connection pool
@@ -15,7 +13,7 @@ type RDB = sqlx.DB
 func NewRDB(URL string, maxIdleConns, maxOpenConns int) (*RDB, error) {
 	db, err := sqlx.Open("postgres", URL)
 	if err != nil {
-		return nil, domain.WrapError(err)
+		return nil, err
 	}
 
 	db.SetMaxIdleConns(maxIdleConns)

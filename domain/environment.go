@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/srvc/fail"
+import "errors"
 
 // Environment of the app
 type Environment string
@@ -20,7 +20,7 @@ var AllEnvironments = []Environment{
 }
 
 // ErrInvalidEnvironment for when an environment is not defined in our app
-var ErrInvalidEnvironment = fail.New("supplied environment is not supported")
+var ErrInvalidEnvironment = errors.New("supplied environment is not supported")
 
 // Validate wether or the the environment is a valid one
 func (env Environment) Validate() error {
@@ -31,9 +31,4 @@ func (env Environment) Validate() error {
 	}
 
 	return ErrInvalidEnvironment
-}
-
-// ShouldSecure indicates wether or not the environment needs to have security enforced
-func (env Environment) ShouldSecure() bool {
-	return env == EnvProduction
 }

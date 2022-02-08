@@ -1,0 +1,35 @@
+openapi: "3.0.0"
+info:
+  description: "The API for my personal website"
+  version: "1.0.0"
+  title: "AntonVE"
+servers:
+  - url: https://antonve.be/api
+paths:
+  /resume/{slug}:
+    get:
+      summary: "Finds resume by slug"
+      operationId: "findResumeBySlug"
+      parameters:
+      - name: slug
+        in: path
+        description: slug of resume to fetch
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: resume response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resume'
+components:
+  schemas:
+    Resume:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string

@@ -1,3 +1,0 @@
-DROP TABLE resume CASCADE;
-
-DROP TABLE resume_logs CASCADE;

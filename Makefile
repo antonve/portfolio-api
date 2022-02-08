@@ -2,30 +2,17 @@
 SHELL := /bin/bash -Eeuo pipefail
 
 .PHONY: all
-all: setup gen lint migrate test run
-
-.PHONY: setup
-setup:
-	gex --build
+all: test run
 
 .PHONY: gen
 gen:
-	@go generate ./...
-
-.PHONY: lint
-lint:
-	gex golint -set_exit_status ./...
-	gex ineffassign .
-
-.PHONY: migrate
-migrate:
-	@go run cmd/migrate/main.go
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen
+	oapi-codegen api/openapi.yaml > ports/openapi/openapi.gen.go
 
 .PHONY: test
 test:
-	@make lint
 	@go test -v ./... -count=1
 
 .PHONY: run
 run:
-	@go run cmd/server/main.go
+	@go run main.go
