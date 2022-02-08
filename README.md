@@ -23,10 +23,10 @@ $ make all
 $ make run
 ```
 
-### Lint project
+### Generate files
 
 ```sh
-$ make lint
+$ make gen
 ```
 
 ### Run tests
