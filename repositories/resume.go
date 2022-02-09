@@ -32,11 +32,11 @@ type resumeRepository struct {
 func (r *resumeRepository) StoreResume(ctx context.Context, resume *resume.Resume) error {
 	query := `
 		insert into resume
-		(slug, body, enabled)
-		values (:slug, :body, :enabled)
+		(slug, body, is_visible)
+		values (:slug, :body, :is_visible)
 	`
 
-	_, err := r.rdb.NamedExecContext(ctx, query, resume)
+	_, err := r.rdb.NamedExecContext(ctx, query, domainToResumeModel(resume))
 	return err
 }
 
@@ -58,7 +58,7 @@ func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*resume
 	var model ResumeModel
 
 	query := `
-		select slug, body, enabled
+		select slug, body, is_visible
 		from resume
 		where slug = $1 and is_visible = true
 	`
@@ -73,4 +73,12 @@ func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*resume
 
 func resumeModelToDomain(model ResumeModel) (*resume.Resume, error) {
 	return resume.NewResume(model.Slug, model.Body, model.IsVisible)
+}
+
+func domainToResumeModel(resume *resume.Resume) *ResumeModel {
+	return &ResumeModel{
+		Slug:      resume.Slug(),
+		Body:      resume.Body(),
+		IsVisible: resume.IsVisble(),
+	}
 }
