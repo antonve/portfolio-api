@@ -3,6 +3,7 @@ module github.com/antonve/portfolio-api
 go 1.18
 
 require (
+	github.com/DavidHuie/gomigrate v0.0.0-20190826182718-4adc4b3de142 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/creasty/configo v0.0.0-20170711121124-288b7e8980d2
 	github.com/deepmap/oapi-codegen v1.9.1
