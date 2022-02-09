@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/antonve/portfolio-api/app"
@@ -13,7 +14,17 @@ func main() {
 		log.Fatalf("could not start application: %s", err)
 	}
 
-	httpServer := ports.NewHttpServer(app)
+	serverType := app.Config().ServerToRun
 
-	httpServer.Start()
+	switch serverType {
+	case "http":
+		httpServer := ports.NewHttpServer(app)
+		httpServer.Start()
+
+	case "migrate":
+		panic("migrate not yet implemented")
+
+	default:
+		panic(fmt.Sprintf("server type '%s' is not supported", serverType))
+	}
 }

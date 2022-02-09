@@ -2,7 +2,7 @@
 SHELL := /bin/bash -Eeuo pipefail
 
 .PHONY: all
-all: test run
+all: migrate test run
 
 .PHONY: gen
 gen:
@@ -13,6 +13,10 @@ gen:
 test:
 	@go test -v ./... -count=1
 
+.PHONY: migrate
+migrate:
+	@SERVER_TO_RUN=migrate go run main.go
+
 .PHONY: run
 run:
-	@go run main.go
+	@SERVER_TO_RUN=http go run main.go

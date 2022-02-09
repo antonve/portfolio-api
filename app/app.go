@@ -16,6 +16,7 @@ type Application interface {
 }
 
 type Config struct {
+	ServerToRun          string             `envconfig:"server_to_run" valid:"required" default:"http"`
 	Environment          domain.Environment `envconfig:"app_env" valid:"required" default:"development"`
 	DatabaseURL          string             `envconfig:"database_url" valid:"required"`
 	DatabaseMaxIdleConns int                `envconfig:"database_max_idle_conns" valid:"required"`
