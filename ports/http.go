@@ -29,11 +29,7 @@ func (h HttpServer) Start() error {
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
-	openapi.RegisterHandlers(h.server, h)
+	openapi.RegisterHandlers(h.server, h.app.HTTPHandlers())
 	fmt.Println(h.app.Config())
 	return h.server.Start(fmt.Sprintf(":%s", h.app.Config().Port))
-}
-
-func (h HttpServer) FindResumeBySlug(ctx echo.Context, slug string) error {
-	return ctx.JSON(http.StatusOK, openapi.Resume{Body: "hello world"})
 }

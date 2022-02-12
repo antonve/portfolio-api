@@ -6,6 +6,7 @@ import (
 
 	"github.com/creasty/configo"
 
+	"github.com/antonve/portfolio-api/app/resume"
 	"github.com/antonve/portfolio-api/domain"
 	"github.com/antonve/portfolio-api/infra"
 )
@@ -13,6 +14,12 @@ import (
 type Application interface {
 	RDB() *infra.RDB
 	Config() *Config
+
+	HTTPHandlers() *HTTPHandlers
+}
+
+type HTTPHandlers struct {
+	resume.HTTPHandlers
 }
 
 type Config struct {
@@ -47,6 +54,11 @@ type app struct {
 		result *infra.RDB
 		once   sync.Once
 	}
+
+	httpHandlers struct {
+		result *HTTPHandlers
+		once   sync.Once
+	}
 }
 
 func (d *app) Config() *Config {
@@ -65,6 +77,14 @@ func (d *app) RDB() *infra.RDB {
 		if err != nil {
 			log.Fatalf("failed to initialize connection pool with database: %v\n", err)
 		}
+	})
+	return holder.result
+}
+
+func (d *app) HTTPHandlers() *HTTPHandlers {
+	holder := &d.httpHandlers
+	holder.once.Do(func() {
+		holder.result = &HTTPHandlers{resume.NewHTTPHandlers()}
 	})
 	return holder.result
 }
