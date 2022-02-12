@@ -20,8 +20,14 @@ type VisitModel struct {
 }
 
 // NewResumeRepository instantiates a new resume repository
-func NewResumeRepository(rdb *infra.RDB) *resumeRepository {
+func NewResumeRepository(rdb *infra.RDB) ResumeRepository {
 	return &resumeRepository{rdb: rdb}
+}
+
+type ResumeRepository interface {
+	StoreResume(ctx context.Context, resume *Resume) error
+	StoreVisit(ctx context.Context, visit *Visit) (uuid string, err error)
+	FindBySlug(ctx context.Context, slug string) (*Resume, error)
 }
 
 type resumeRepository struct {

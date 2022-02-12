@@ -9,12 +9,26 @@ import (
 )
 
 type HTTPHandlers struct {
+	resumeService ResumeService
 }
 
-func NewHTTPHandlers() HTTPHandlers {
-	return HTTPHandlers{}
+func NewHTTPHandlers(resumeService ResumeService) HTTPHandlers {
+	return HTTPHandlers{
+		resumeService: resumeService,
+	}
 }
 
 func (s HTTPHandlers) FindResumeBySlug(ctx echo.Context, slug string) error {
-	return ctx.JSON(http.StatusOK, openapi.Resume{Body: "hello world"})
+	r, err := s.resumeService.FindResumeBySlug(ctx.Request().Context(), slug)
+
+	if err != nil {
+		switch err {
+		case ErrResumeNotFound:
+			return ctx.NoContent(http.StatusNotFound)
+		default:
+			return err
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, openapi.Resume{Body: r.Body()})
 }

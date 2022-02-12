@@ -16,10 +16,15 @@ type Application interface {
 	Config() *Config
 
 	HTTPHandlers() *HTTPHandlers
+	Services() *Services
 }
 
 type HTTPHandlers struct {
 	resume.HTTPHandlers
+}
+
+type Services struct {
+	Resume resume.ResumeService
 }
 
 type Config struct {
@@ -55,6 +60,11 @@ type app struct {
 		once   sync.Once
 	}
 
+	services struct {
+		result *Services
+		once   sync.Once
+	}
+
 	httpHandlers struct {
 		result *HTTPHandlers
 		once   sync.Once
@@ -81,10 +91,21 @@ func (d *app) RDB() *infra.RDB {
 	return holder.result
 }
 
+func (d *app) Services() *Services {
+	holder := &d.services
+	holder.once.Do(func() {
+		resumeRepo := resume.NewResumeRepository(d.RDB())
+		holder.result = &Services{
+			Resume: resume.NewResumeService(resumeRepo),
+		}
+	})
+	return holder.result
+}
+
 func (d *app) HTTPHandlers() *HTTPHandlers {
 	holder := &d.httpHandlers
 	holder.once.Do(func() {
-		holder.result = &HTTPHandlers{resume.NewHTTPHandlers()}
+		holder.result = &HTTPHandlers{resume.NewHTTPHandlers(d.Services().Resume)}
 	})
 	return holder.result
 }
