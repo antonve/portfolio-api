@@ -1,4 +1,4 @@
-package repositories_test
+package resume_test
 
 import (
 	"context"
@@ -6,15 +6,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/antonve/portfolio-api/domain/resume"
-	"github.com/antonve/portfolio-api/repositories"
+	"github.com/antonve/portfolio-api/app/resume"
+	"github.com/antonve/portfolio-api/test"
 )
 
 func TestResumeRepository_StoreResume(t *testing.T) {
-	rdb, cleanup := setupTestingSuite(t)
+	rdb, cleanup := test.GetDatabase(t)
 	defer cleanup()
 
-	repo := repositories.NewResumeRepository(rdb)
+	repo := resume.NewResumeRepository(rdb)
 
 	resume, _ := resume.NewResume("test", "{}", true)
 

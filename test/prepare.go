@@ -1,4 +1,4 @@
-package repositories_test
+package test
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func TestMain(m *testing.M) {
+func SetupDatabase(m *testing.M) {
 	dbURL := os.Getenv("TESTING_DATABASE_URL")
 	// Must be called pgx so the sqlx mapper uses the correct notation
 	txdb.Register("pgx", "postgres", dbURL)
@@ -37,12 +37,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(fmt.Sprintf("could not migrate testing DB: %s", err))
 	}
-
-	code := m.Run()
-	defer os.Exit(code)
 }
 
-func setupTestingSuite(t *testing.T) (*infra.RDB, func() error) {
+func GetDatabase(t *testing.T) (*infra.RDB, func() error) {
 	t.Parallel()
 
 	db, cleanup := prepareDB(t)

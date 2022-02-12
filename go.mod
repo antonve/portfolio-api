@@ -3,8 +3,8 @@ module github.com/antonve/portfolio-api
 go 1.18
 
 require (
-	github.com/DATA-DOG/go-txdb v0.1.5 // indirect
-	github.com/DavidHuie/gomigrate v0.0.0-20190826182718-4adc4b3de142 // indirect
+	github.com/DATA-DOG/go-txdb v0.1.5
+	github.com/DavidHuie/gomigrate v0.0.0-20190826182718-4adc4b3de142
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/creasty/configo v0.0.0-20170711121124-288b7e8980d2
 	github.com/deepmap/oapi-codegen v1.9.1
@@ -15,5 +15,5 @@ require (
 	github.com/labstack/echo/v4 v4.6.3
 	github.com/lib/pq v1.10.4
 	github.com/mattn/go-zglob v0.0.3 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/stretchr/testify v1.7.0
 )

@@ -1,9 +1,8 @@
-package repositories
+package resume
 
 import (
 	"context"
 
-	"github.com/antonve/portfolio-api/domain/resume"
 	"github.com/antonve/portfolio-api/infra"
 )
 
@@ -29,7 +28,7 @@ type resumeRepository struct {
 	rdb *infra.RDB
 }
 
-func (r *resumeRepository) StoreResume(ctx context.Context, resume *resume.Resume) error {
+func (r *resumeRepository) StoreResume(ctx context.Context, resume *Resume) error {
 	query := `
 		insert into resume
 		(slug, body, is_visible)
@@ -40,7 +39,7 @@ func (r *resumeRepository) StoreResume(ctx context.Context, resume *resume.Resum
 	return err
 }
 
-func (r *resumeRepository) StoreVisit(ctx context.Context, visit *resume.Visit) (uuid string, err error) {
+func (r *resumeRepository) StoreVisit(ctx context.Context, visit *Visit) (uuid string, err error) {
 	query := `
 		insert into resume_logs
 		(slug, ip_address, user_agent)
@@ -54,7 +53,7 @@ func (r *resumeRepository) StoreVisit(ctx context.Context, visit *resume.Visit) 
 	return
 }
 
-func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*resume.Resume, error) {
+func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*Resume, error) {
 	var model ResumeModel
 
 	query := `
@@ -71,11 +70,11 @@ func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*resume
 	return resumeModelToDomain(model)
 }
 
-func resumeModelToDomain(model ResumeModel) (*resume.Resume, error) {
-	return resume.NewResume(model.Slug, model.Body, model.IsVisible)
+func resumeModelToDomain(model ResumeModel) (*Resume, error) {
+	return NewResume(model.Slug, model.Body, model.IsVisible)
 }
 
-func domainToResumeModel(resume *resume.Resume) *ResumeModel {
+func domainToResumeModel(resume *Resume) *ResumeModel {
 	return &ResumeModel{
 		Slug:      resume.Slug(),
 		Body:      resume.Body(),
