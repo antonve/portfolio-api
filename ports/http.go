@@ -28,6 +28,7 @@ func (h HttpServer) Start() error {
 		AllowOrigins: h.app.Config().CORSAllowedOrigins,
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
+	h.server.Use(middleware.Logger())
 
 	openapi.RegisterHandlers(h.server, h.app.HTTPHandlers())
 	fmt.Println(h.app.Config())

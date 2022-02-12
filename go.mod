@@ -9,6 +9,7 @@ require (
 	github.com/creasty/configo v0.0.0-20170711121124-288b7e8980d2
 	github.com/deepmap/oapi-codegen v1.9.1
 	github.com/getkin/kin-openapi v0.89.0
+	github.com/google/uuid v1.3.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect

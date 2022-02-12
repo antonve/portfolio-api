@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"context"
+
 	"github.com/jmoiron/sqlx"
 	// Postgres driver that's used to connect to the db
 	_ "github.com/lib/pq"
@@ -20,4 +22,9 @@ func NewRDB(URL string, maxIdleConns, maxOpenConns int) (*RDB, error) {
 	db.SetMaxOpenConns(maxOpenConns)
 
 	return db, nil
+}
+
+type Querier interface {
+	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
 }

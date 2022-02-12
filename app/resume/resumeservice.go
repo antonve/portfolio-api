@@ -9,7 +9,7 @@ import (
 var ErrResumeNotFound = errors.New("resume not found")
 
 type ResumeService interface {
-	FindResumeBySlug(ctx context.Context, slug string) (*Resume, error)
+	GetTrackedResumeVisit(ctx context.Context, visit *Visit) (*Resume, error)
 }
 
 type resumeService struct {
@@ -22,8 +22,8 @@ func NewResumeService(resumeRepository ResumeRepository) ResumeService {
 	}
 }
 
-func (s *resumeService) FindResumeBySlug(ctx context.Context, slug string) (*Resume, error) {
-	r, err := s.resumeRepository.FindBySlug(ctx, slug)
+func (s *resumeService) GetTrackedResumeVisit(ctx context.Context, visit *Visit) (*Resume, error) {
+	r, err := s.resumeRepository.FindBySlugTracked(ctx, visit)
 
 	if err != nil {
 		switch err {

@@ -13,7 +13,7 @@ type ResumeModel struct {
 }
 
 type VisitModel struct {
-	ID        uint64 `db:"id"`
+	UUID      uint64 `db:"uuid"`
 	Slug      string `db:"slug"`
 	IPAddress string `db:"ip_address"`
 	UserAgent string `db:"user_agent"`
@@ -26,8 +26,8 @@ func NewResumeRepository(rdb *infra.RDB) ResumeRepository {
 
 type ResumeRepository interface {
 	StoreResume(ctx context.Context, resume *Resume) error
-	StoreVisit(ctx context.Context, visit *Visit) (uuid string, err error)
 	FindBySlug(ctx context.Context, slug string) (*Resume, error)
+	FindBySlugTracked(ctx context.Context, visit *Visit) (*Resume, error)
 }
 
 type resumeRepository struct {
@@ -45,35 +45,30 @@ func (r *resumeRepository) StoreResume(ctx context.Context, resume *Resume) erro
 	return err
 }
 
-func (r *resumeRepository) StoreVisit(ctx context.Context, visit *Visit) (uuid string, err error) {
-	query := `
-		insert into resume_logs
-		(slug, ip_address, user_agent)
-		values ($1, $2, $3)
-		returning id
-	`
-
-	row := r.rdb.QueryRowContext(ctx, query, visit.Slug(), visit.IPAddress(), visit.UserAgent())
-	err = row.Scan(&uuid)
-
-	return
+func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*Resume, error) {
+	return r.findBySlug(ctx, r.rdb, slug)
 }
 
-func (r *resumeRepository) FindBySlug(ctx context.Context, slug string) (*Resume, error) {
-	var model ResumeModel
-
-	query := `
-		select slug, body, is_visible
-		from resume
-		where slug = $1 and is_visible = true
-	`
-
-	err := r.rdb.Get(&model, query, slug)
+func (r *resumeRepository) FindBySlugTracked(ctx context.Context, visit *Visit) (*Resume, error) {
+	tx, err := r.rdb.BeginTxx(ctx, nil)
 	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	resume, err := r.findBySlug(ctx, tx, visit.Slug())
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	_, err = r.storeVisit(ctx, tx, visit)
+	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
-	return resumeModelToDomain(model)
+	err = tx.Commit()
+
+	return resume, err
 }
 
 func resumeModelToDomain(model ResumeModel) (*Resume, error) {
@@ -86,4 +81,35 @@ func domainToResumeModel(resume *Resume) *ResumeModel {
 		Body:      resume.Body(),
 		IsVisible: resume.IsVisble(),
 	}
+}
+
+func (r *resumeRepository) storeVisit(ctx context.Context, querier infra.Querier, visit *Visit) (uuid string, err error) {
+	query := `
+		insert into resume_visits
+		(uuid, slug, ip_address, user_agent)
+		values ($1, $2, $3, $4)
+		returning uuid
+	`
+
+	row := querier.QueryRowxContext(ctx, query, visit.UUID(), visit.Slug(), visit.IPAddress(), visit.UserAgent())
+	err = row.Scan(&uuid)
+
+	return
+}
+
+func (r *resumeRepository) findBySlug(ctx context.Context, querier infra.Querier, slug string) (*Resume, error) {
+	var model ResumeModel
+
+	query := `
+		select slug, body, is_visible
+		from resume
+		where slug = $1 and is_visible = true
+	`
+
+	err := querier.GetContext(ctx, &model, query, slug)
+	if err != nil {
+		return nil, err
+	}
+
+	return resumeModelToDomain(model)
 }
