@@ -6,10 +6,23 @@ info:
 servers:
   - url: https://antonve.be/api
 paths:
+  /resume:
+    get:
+      summary: "Get list of all resume"
+      operationId: "getAllResume"
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: list of resume
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resume'
   /resume/{slug}:
     get:
-      summary: "Finds resume by slug"
-      operationId: "findResumeBySlug"
+      summary: "Get resume"
+      operationId: "getResume"
       parameters:
       - name: slug
         in: path
@@ -23,13 +36,52 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resume'
+                $ref: '#/components/schemas/ResumeView'
+    put:
+      summary: "Updates resume"
+      operationId: "updateResume"
+      security:
+        - ApiKeyAuth: []
+      parameters:
+      - name: slug
+        in: path
+        description: slug of resume to fetch
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resume'
+      responses:
+        '200':
+          description: update response
 components:
   schemas:
     Resume:
       type: object
       required:
         - body
+        - slug
+        - is_visible
       properties:
         body:
           type: string
+        slug:
+          type: string
+        is_visible:
+          type: string
+    ResumeView:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string
+  securitySchemes:
+      ApiKeyAuth:
+        type: apiKey
+        in: header
+        name: x-auth-key

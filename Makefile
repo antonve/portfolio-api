@@ -6,7 +6,7 @@ all: migrate test run
 
 .PHONY: gen
 gen:
-	oapi-codegen api/openapi.yaml > ports/openapi/openapi.gen.go
+	oapi-codegen -package openapi api/openapi.yaml > ports/openapi/openapi.gen.go
 
 .PHONY: test
 test:

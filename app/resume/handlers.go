@@ -36,5 +36,5 @@ func (s HTTPHandlers) FindResumeBySlug(ctx echo.Context, slug string) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, openapi.Resume{Body: r.Body()})
+	return ctx.JSON(http.StatusOK, openapi.ResumeView{Body: r.Body()})
 }
