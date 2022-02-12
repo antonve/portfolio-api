@@ -6,7 +6,6 @@ all: migrate test run
 
 .PHONY: gen
 gen:
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen
 	oapi-codegen api/openapi.yaml > ports/openapi/openapi.gen.go
 
 .PHONY: test
